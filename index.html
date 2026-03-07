@@ -98,7 +98,6 @@ font-size:5vw;
 <select id="modeSelect">
 <option value="int">整数</option>
 <option value="decimal">小数</option>
-<option value="fraction">分数</option>
 </select>
 
 上段の範囲：
@@ -161,6 +160,7 @@ return array;
 function startGame(){
 
 operator=document.getElementById("operatorSelect").value;
+let mode=document.getElementById("modeSelect").value;
 let tens=parseInt(document.getElementById("tensSelect").value);
 let qCount=parseInt(document.getElementById("questionCount").value);
 
@@ -175,7 +175,9 @@ baseNumber=Math.floor(Math.random()*90)+10;
 baseNumber=Math.floor(Math.random()*9)+1;
 }
 
-/* 上段範囲 */
+/* 整数モード */
+
+if(mode==="int"){
 
 let pool=[];
 let start=tens;
@@ -189,15 +191,39 @@ pool.push(i);
 
 shuffle(pool);
 
-/* 問題作成 */
-
 for(let i=0;i<qCount;i++){
 
 let n=pool[i%pool.length];
 
 numbers.push(n);
-
 answers.push(calculate(baseNumber,n,operator));
+
+}
+
+}
+
+/* 小数モード */
+
+if(mode==="decimal"){
+
+for(let i=0;i<qCount;i++){
+
+let n;
+
+if(operator==="×"){
+
+n=(Math.floor(Math.random()*9)+1)/10;
+
+}else{
+
+n=(Math.floor(Math.random()*100))/10;
+
+}
+
+numbers.push(n);
+answers.push(calculate(baseNumber,n,operator));
+
+}
 
 }
 
@@ -228,7 +254,7 @@ let td2=document.createElement("td");
 let input=document.createElement("input");
 
 input.dataset.index=i;
-input.readOnly=true;  // ←キーボード出さない
+input.readOnly=true;
 
 input.onclick=function(){
 currentInput=this;
@@ -271,17 +297,11 @@ btn.onclick=function(){
 if(!currentInput) return;
 
 if(k=="←"){
-
 currentInput.value=currentInput.value.slice(0,-1);
-
 }else if(k=="OK"){
-
 moveNext();
-
 }else{
-
 currentInput.value+=k;
-
 }
 
 }
@@ -301,13 +321,9 @@ for(let i=0;i<inputs.length;i++){
 if(inputs[i]===currentInput){
 
 if(i<inputs.length-1){
-
 currentInput=inputs[i+1];
-
 }else{
-
 currentInput=null;
-
 }
 
 break;
