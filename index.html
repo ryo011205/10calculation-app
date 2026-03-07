@@ -1,11 +1,8 @@
-```html
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>計算チャレンジ</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10算チャレンジ</title>
 
 <style>
 
@@ -14,36 +11,28 @@ font-family:sans-serif;
 text-align:center;
 }
 
-table{
-border-collapse:collapse;
-margin:auto;
+#grid{
+display:grid;
+grid-template-columns: repeat(11,70px);
+gap:5px;
+justify-content:center;
 margin-top:20px;
 }
 
-td{
-border:2px solid black;
-width:70px;
-height:70px;
-font-size:28px;
+.cell{
+border:1px solid #aaa;
+height:60px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:22px;
 }
 
 input{
-width:100%;
-height:100%;
-font-size:28px;
-text-align:center;
-border:none;
-}
-
-button,select{
-font-size:20px;
-padding:8px;
-margin:5px;
-}
-
-#result{
-margin-top:20px;
+width:60px;
+height:50px;
 font-size:24px;
+text-align:center;
 }
 
 #keypad{
@@ -55,24 +44,15 @@ justify-content:center;
 }
 
 .key{
-font-size:28px;
-padding:15px;
 background:#eee;
-border-radius:10px;
+padding:15px;
+font-size:24px;
+border-radius:8px;
 }
 
-@media (max-width:900px){
-
-td{
-width:9vw;
-height:9vw;
-font-size:5vw;
-}
-
-input{
-font-size:5vw;
-}
-
+#result{
+font-size:24px;
+margin-top:20px;
 }
 
 </style>
@@ -80,230 +60,192 @@ font-size:5vw;
 
 <body>
 
-<h2>計算チャレンジ</h2>
+<h2>計算トレーニング</h2>
 
-<div>
+<button onclick="startGame()">開始</button>
+<button onclick="finishGame()">終了</button>
 
-演算：
-<select id="operatorSelect">
-<option value="+">＋</option>
-<option value="-">－</option>
-<option value="×">×</option>
-<option value="÷">÷</option>
-</select>
-
-モード：
-<select id="modeSelect">
-<option value="int">整数</option>
-<option value="decimal">小数</option>
-<option value="fraction">分数</option>
-</select>
-
-上段の範囲：
-<select id="tensSelect">
-<option value="0">0〜10</option>
-<option value="10">10〜19</option>
-<option value="20">20〜29</option>
-<option value="30">30〜39</option>
-<option value="40">40〜49</option>
-<option value="50">50〜59</option>
-<option value="60">60〜69</option>
-<option value="70">70〜79</option>
-<option value="80">80〜89</option>
-<option value="90">90〜99</option>
-</select>
-
-問題数：
-<select id="questionCount">
-<option value="10">10問</option>
-<option value="100">100問</option>
-</select>
-
-<button onclick="startGame()">スタート</button>
-
-</div>
-
-<table id="calcTable"></table>
-
-<div id="result"></div>
+<div id="grid"></div>
 
 <div id="keypad"></div>
 
+<div id="result"></div>
+
 <script>
 
-let startTime;
-let operator;
-let baseNumber;
-let numbers=[];
-let answers=[];
-let currentInput=null;
-
-function calculate(a,b,op){
-
-if(op==="+") return a+b;
-if(op==="-") return a-b;
-if(op==="×") return a*b;
-if(op==="÷") return a/b;
-
-}
-
-function shuffle(array){
-for(let i=array.length-1;i>0;i--){
-let j=Math.floor(Math.random()*(i+1));
-[array[i],array[j]]=[array[j],array[i]];
-}
-return array;
-}
+let startTime
+let activeInput=null
+let answers=[]
+let correct=0
 
 function startGame(){
 
-operator=document.getElementById("operatorSelect").value;
-let tens=parseInt(document.getElementById("tensSelect").value);
-let qCount=parseInt(document.getElementById("questionCount").value);
+document.getElementById("grid").innerHTML=""
+answers=[]
+correct=0
 
-numbers=[];
-answers=[];
+startTime=performance.now()
 
-/* 元の数 */
+let base=Math.floor(Math.random()*90)+10
 
-if(operator=="-"){
-baseNumber=Math.floor(Math.random()*90)+10;
-}else{
-baseNumber=Math.floor(Math.random()*9)+1;
-}
+let nums=[]
 
-/* 上段範囲 */
+while(nums.length<10){
 
-let pool=[];
-let start=tens;
-let end=tens+9;
+let n=Math.floor(Math.random()*base)
 
-if(tens==0) end=10;
-
-for(let i=start;i<=end;i++){
-pool.push(i);
-}
-
-shuffle(pool);
-
-/* 問題作成 */
-
-for(let i=0;i<qCount;i++){
-
-let n=pool[i%pool.length];
-
-numbers.push(n);
-
-answers.push(calculate(baseNumber,n,operator));
+if(!nums.includes(n)) nums.push(n)
 
 }
 
-startTime=performance.now();
+let grid=document.getElementById("grid")
 
-let table=document.getElementById("calcTable");
-table.innerHTML="";
+grid.appendChild(makeCell("+"))
 
-let row1=document.createElement("tr");
-let row2=document.createElement("tr");
+grid.appendChild(makeCell(base))
 
-let opCell=document.createElement("td");
-opCell.innerText=operator;
+for(let n of nums){
 
-let baseCell=document.createElement("td");
-baseCell.innerText=baseNumber;
+grid.appendChild(makeCell(n))
 
-row1.appendChild(opCell);
-row2.appendChild(baseCell);
+}
 
-for(let i=0;i<qCount;i++){
+grid.appendChild(makeCell("="))
+grid.appendChild(makeCell(""))
 
-let td1=document.createElement("td");
-td1.innerText=numbers[i];
+for(let n of nums){
 
-let td2=document.createElement("td");
+let ans=base+n
+answers.push(ans)
 
-let input=document.createElement("input");
+let input=document.createElement("input")
 
-input.dataset.index=i;
+input.readOnly=true
 
 input.onclick=function(){
-currentInput=this;
+activeInput=input
 }
 
+let cell=document.createElement("div")
+cell.className="cell"
+cell.appendChild(input)
 
-td2.appendChild(input);
-
-row1.appendChild(td1);
-row2.appendChild(td2);
-
-}
-
-table.appendChild(row1);
-table.appendChild(row2);
-
-document.querySelector("input").focus();
-
-createKeypad();
+grid.appendChild(cell)
 
 }
 
-/* テンキー */
+createKeypad()
+
+}
+
+function makeCell(text){
+
+let d=document.createElement("div")
+d.className="cell"
+d.innerText=text
+return d
+
+}
 
 function createKeypad(){
 
-let keypad=document.getElementById("keypad");
+let k=document.getElementById("keypad")
+k.innerHTML=""
 
-keypad.innerHTML="";
+for(let i=1;i<=9;i++){
 
-let keys=["7","8","9","4","5","6","1","2","3","0",".","←"];
+let b=document.createElement("div")
+b.className="key"
+b.innerText=i
+b.onclick=()=>press(i)
 
-keys.forEach(k=>{
+k.appendChild(b)
 
-let btn=document.createElement("div");
-btn.className="key";
-btn.innerText=k;
+}
 
-btn.onclick=function(){
+let zero=document.createElement("div")
+zero.className="key"
+zero.innerText=0
+zero.onclick=()=>press(0)
 
-if(!currentInput) return;
+k.appendChild(zero)
 
-if(k=="←"){
-currentInput.value=currentInput.value.slice(0,-1);
+let del=document.createElement("div")
+del.className="key"
+del.innerText="←"
+del.onclick=backspace
+
+k.appendChild(del)
+
+let next=document.createElement("div")
+next.className="key"
+next.innerText="OK"
+next.onclick=nextInput
+
+k.appendChild(next)
+
+}
+
+function press(n){
+
+if(!activeInput) return
+
+activeInput.value+=n
+
+}
+
+function backspace(){
+
+if(!activeInput) return
+
+activeInput.value=activeInput.value.slice(0,-1)
+
+}
+
+function nextInput(){
+
+let inputs=document.querySelectorAll("input")
+
+for(let i=0;i<inputs.length;i++){
+
+if(inputs[i]===activeInput){
+
+if(i<inputs.length-1){
+
+activeInput=inputs[i+1]
+
 }else{
-currentInput.value+=k;
-currentInput.dispatchEvent(new Event("input"));
-}
+
+activeInput=null
 
 }
 
-keypad.appendChild(btn);
+break
 
-});
+}
+
+}
 
 }
 
 function finishGame(){
 
-let endTime=performance.now();
+let inputs=document.querySelectorAll("input")
 
-let time=((endTime-startTime)/1000).toFixed(2);
+correct=0
 
-let inputs=document.querySelectorAll("input");
+inputs.forEach((inp,i)=>{
 
-let correct=0;
+if(parseFloat(inp.value)==answers[i]) correct++
 
-inputs.forEach((input,i)=>{
+})
 
-let user=parseFloat(input.value);
+let end=performance.now()
 
-if(Math.abs(user-answers[i])<0.0001){
-correct++;
-}
-
-});
+let time=((end-startTime)/1000).toFixed(2)
 
 document.getElementById("result").innerHTML=
-"タイム："+time+" 秒<br>正答数："+correct+" / "+numbers.length;
+"タイム："+time+"秒　正解："+correct+"/"+answers.length
 
 }
 
@@ -311,4 +253,3 @@ document.getElementById("result").innerHTML=
 
 </body>
 </html>
-```
