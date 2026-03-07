@@ -193,7 +193,7 @@ if(tens==0) end=10;
 let table=document.getElementById("calcTable");
 table.innerHTML="";
 
-let cols=11;
+let cols=10;
 let rows=(qCount==100)?11:2;
 
 let topNumbers=[];
@@ -273,7 +273,7 @@ let keypad=document.getElementById("keypad");
 
 keypad.innerHTML="";
 
-let keys=["7","8","9","4","5","6","1","2","3","0",".","Del","OK"];
+let keys=["7","8","9","4","5","6","1","2","3","0",".","←","OK"];
 
 keys.forEach(k=>{
 
@@ -285,7 +285,7 @@ btn.onclick=function(){
 
 if(!currentInput) return;
 
-if(k==="Del"){
+if(k==="←"){
 
 currentInput.value=currentInput.value.slice(0,-1);
 
