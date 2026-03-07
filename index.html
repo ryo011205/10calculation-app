@@ -287,7 +287,9 @@ let keys=[
 keys.forEach(k=>{
 
 let btn=document.createElement("div");
-btn.className="key";
+if(k==="OK"){
+btn.className="key okkey";
+}
 btn.innerText=k;
 
 btn.onclick=function(){
