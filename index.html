@@ -52,7 +52,7 @@ font-size:24px;
 #keypad{
 margin-top:20px;
 display:grid;
-grid-template-columns:repeat(3,65px);
+grid-template-columns:repeat(4,70px);
 gap:10px;
 justify-content:center;
 }
@@ -65,6 +65,12 @@ border-radius:10px;
 user-select:none;
 }
 
+.okkey{
+grid-row:2 / span 2;
+font-size:30px;
+background:#ffd966;
+}
+  
 @media (max-width:900px){
 
 td{
@@ -274,8 +280,6 @@ function createKeypad(){
 let keypad=document.getElementById("keypad");
 
 keypad.innerHTML="";
-
-let keys=["7","8","9","4","5","6","1","2","3","0",".","←","OK"];
 
 let keys=[
 "7","8","9",
