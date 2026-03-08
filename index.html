@@ -166,7 +166,6 @@ font-size:3.5vw;
 </select>
 
 <button onclick="startGame()">スタート</button>
-<button onclick="finishGame()">終了</button>
 
 </div>
 
@@ -420,6 +419,7 @@ currentInput=inputs[i+1];
 highlightColumn(currentInput);
 }else{
 currentInput=null;
+finishGame();
 }
 
 break;
