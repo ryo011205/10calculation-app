@@ -166,6 +166,7 @@ font-size:3.5vw;
 </select>
 
 <button onclick="startGame()">スタート</button>
+<button onclick="finishGame()">終了</button>
 
 </div>
 
@@ -234,7 +235,7 @@ table.innerHTML="";
 let cols=11;
 let rows=(qCount==100)?11:2;
 
-/* 上段 */
+/* 上段（重複なし） */
 
 let topNumbers=[];
 for(let i=start;i<=end;i++){
@@ -248,7 +249,8 @@ let leftNumbers=[];
 
 if(mode==="int"){
 
-leftNumbers=shuffle([1,2,3,4,5,6,7,8,9,10]);
+let arr=[1,2,3,4,5,6,7,8,9,10];
+leftNumbers=shuffle(arr);
 
 }else{
 
@@ -414,15 +416,10 @@ for(let i=0;i<inputs.length;i++){
 if(inputs[i]===currentInput){
 
 if(i<inputs.length-1){
-
 currentInput=inputs[i+1];
 highlightColumn(currentInput);
-
 }else{
-
 currentInput=null;
-finishGame();
-
 }
 
 break;
