@@ -15,10 +15,27 @@ background:#FFF8E1;
 color:#0B3D91;
 }
 
+/* レイアウト */
+
+#gameArea{
+display:flex;
+justify-content:center;
+gap:30px;
+margin-top:20px;
+}
+
+.tabletMode{
+flex-direction:column;
+align-items:center;
+}
+
+.pcMode{
+flex-direction:row;
+align-items:flex-start;
+}
+
 table{
 border-collapse:collapse;
-margin:auto;
-margin-top:20px;
 }
 
 td{
@@ -29,14 +46,16 @@ font-size:24px;
 text-align:center;
 }
 
-/* 上段・左端 */
+/* 上段・左列 */
+
 .header{
 background:#0B3D91;
 color:white;
 font-weight:bold;
 }
 
-/* 上段のアクティブ列 */
+/* 解いている列 */
+
 .topHeader.active{
 background:orange;
 color:white;
@@ -49,7 +68,6 @@ font-size:24px;
 text-align:center;
 border:none;
 box-sizing:border-box;
-padding:4px;
 background:#FFF8E1;
 color:#0B3D91;
 }
@@ -65,12 +83,12 @@ margin-top:20px;
 font-size:24px;
 }
 
+/* テンキー */
+
 #keypad{
-margin-top:20px;
 display:grid;
 grid-template-columns:repeat(4,70px);
 gap:10px;
-justify-content:center;
 }
 
 .key{
@@ -87,7 +105,9 @@ grid-column:4;
 font-size:30px;
 background:#ffd966;
 }
- 
+
+/* スマホ */
+
 @media (max-width:900px){
 
 td{
@@ -149,16 +169,26 @@ font-size:3.5vw;
 <option value="100">100問</option>
 </select>
 
+表示モード：
+<select id="deviceMode">
+<option value="tablet">タブレット</option>
+<option value="pc">PC</option>
+</select>
+
 <button onclick="startGame()">スタート</button>
 <button onclick="finishGame()">終了</button>
 
 </div>
 
-<table id="calcTable"></table>
-
-<div id="result"></div>
+<div id="gameArea" class="tabletMode">
 
 <div id="keypad"></div>
+
+<table id="calcTable"></table>
+
+</div>
+
+<div id="result"></div>
 
 <script>
 
@@ -202,6 +232,8 @@ return (Math.floor(Math.random()*100))/10;
 }
 
 function startGame(){
+
+setDeviceMode();
 
 operator=document.getElementById("operatorSelect").value;
 let mode=document.getElementById("modeSelect").value;
@@ -312,6 +344,21 @@ header.classList.add("active");
 
 }
 
+function setDeviceMode(){
+
+let mode=document.getElementById("deviceMode").value;
+let area=document.getElementById("gameArea");
+
+area.classList.remove("pcMode","tabletMode");
+
+if(mode==="pc"){
+area.classList.add("pcMode");
+}else{
+area.classList.add("tabletMode");
+}
+
+}
+
 function createKeypad(){
 
 let keypad=document.getElementById("keypad");
@@ -328,11 +375,13 @@ let keys=[
 keys.forEach(k=>{
 
 let btn=document.createElement("div");
+
 if(k==="OK"){
 btn.className="key okkey";
 }else{
 btn.className="key";
 }
+
 btn.innerText=k;
 
 btn.onclick=function(){
@@ -361,6 +410,8 @@ keypad.appendChild(btn);
 
 }
 
+/* 列色は自動移動 */
+
 function moveNext(){
 
 let inputs=document.querySelectorAll("input");
@@ -383,6 +434,30 @@ break;
 }
 
 }
+
+/* PCキーボード入力 */
+
+document.addEventListener("keydown",function(e){
+
+if(!currentInput) return;
+
+if(e.key>="0" && e.key<="9"){
+currentInput.value+=e.key;
+}
+
+if(e.key==="."){
+currentInput.value+=".";
+}
+
+if(e.key==="Backspace"){
+currentInput.value=currentInput.value.slice(0,-1);
+}
+
+if(e.key==="Enter"){
+moveNext();
+}
+
+});
 
 function finishGame(){
 
