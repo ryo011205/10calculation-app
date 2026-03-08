@@ -22,14 +22,10 @@ gap:30px;
 margin-top:20px;
 }
 
-/* タブレット */
-
 .tabletMode{
 flex-direction:column;
 align-items:center;
 }
-
-/* PC */
 
 .pcMode{
 flex-direction:row;
@@ -80,8 +76,6 @@ margin:5px;
 margin-top:20px;
 font-size:24px;
 }
-
-/* テンキー */
 
 #keypad{
 display:grid;
@@ -224,6 +218,7 @@ function startGame(){
 setDeviceMode();
 
 operator=document.getElementById("operatorSelect").value;
+let mode=document.getElementById("modeSelect").value;
 let tens=parseInt(document.getElementById("tensSelect").value);
 let qCount=parseInt(document.getElementById("questionCount").value);
 
@@ -240,25 +235,36 @@ table.innerHTML="";
 let cols=11;
 let rows=(qCount==100)?11:2;
 
-/* 上段 */
+/* 上段（重複なし） */
 
 let topNumbers=[];
 for(let i=start;i<=end;i++){
 topNumbers.push(i);
 }
-
 topNumbers=shuffle(topNumbers).slice(0,10);
 
 /* 左端 */
 
 let leftNumbers=[];
 
-if(qCount==100){
-for(let i=1;i<=10;i++){
-leftNumbers.push(i);
-}
+if(mode==="int"){
+
+let arr=[1,2,3,4,5,6,7,8,9,10];
+leftNumbers=shuffle(arr);
+
 }else{
-leftNumbers.push(Math.floor(Math.random()*(end-start+1))+start);
+
+let arr=[];
+for(let i=1;i<=99;i++){
+arr.push((i/10).toFixed(1));
+}
+
+leftNumbers=shuffle(arr).slice(0,10).map(Number);
+
+}
+
+if(qCount===10){
+leftNumbers=[leftNumbers[0]];
 }
 
 for(let r=0;r<rows;r++){
@@ -358,7 +364,6 @@ area.classList.add("tabletMode");
 function createKeypad(){
 
 let keypad=document.getElementById("keypad");
-
 keypad.innerHTML="";
 
 let keys=[
