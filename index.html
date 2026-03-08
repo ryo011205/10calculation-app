@@ -15,8 +15,6 @@ background:#FFF8E1;
 color:#0B3D91;
 }
 
-/* レイアウト */
-
 #gameArea{
 display:flex;
 justify-content:center;
@@ -46,15 +44,11 @@ font-size:24px;
 text-align:center;
 }
 
-/* 上段・左列 */
-
 .header{
 background:#0B3D91;
 color:white;
 font-weight:bold;
 }
-
-/* 解いている列 */
 
 .topHeader.active{
 background:orange;
@@ -83,8 +77,6 @@ margin-top:20px;
 font-size:24px;
 }
 
-/* テンキー */
-
 #keypad{
 display:grid;
 grid-template-columns:repeat(4,70px);
@@ -105,8 +97,6 @@ grid-column:4;
 font-size:30px;
 background:#ffd966;
 }
-
-/* スマホ */
 
 @media (max-width:900px){
 
@@ -215,20 +205,12 @@ area.style.display = (mode==="int") ? "inline" : "none";
 
 }
 
-function randomNumber(mode,start,end,operator){
-
-if(mode==="int"){
-return Math.floor(Math.random()*(end-start+1))+start;
-}else{
-
-if(operator==="×"){
-return (Math.floor(Math.random()*9)+1)/10;
-}else{
-return (Math.floor(Math.random()*100))/10;
+function shuffle(array){
+for(let i=array.length-1;i>0;i--){
+let j=Math.floor(Math.random()*(i+1));
+[array[i],array[j]]=[array[j],array[i]];
 }
-
-}
-
+return array;
 }
 
 function startGame(){
@@ -236,7 +218,6 @@ function startGame(){
 setDeviceMode();
 
 operator=document.getElementById("operatorSelect").value;
-let mode=document.getElementById("modeSelect").value;
 let tens=parseInt(document.getElementById("tensSelect").value);
 let qCount=parseInt(document.getElementById("questionCount").value);
 
@@ -253,15 +234,30 @@ table.innerHTML="";
 let cols=11;
 let rows=(qCount==100)?11:2;
 
-let topNumbers=[];
-let leftNumbers=[];
+/* 上段（重複なし） */
 
-for(let c=0;c<cols-1;c++){
-topNumbers.push(randomNumber(mode,start,end,operator));
+let topNumbers=[];
+
+for(let i=start;i<=end;i++){
+topNumbers.push(i);
 }
 
-for(let r=0;r<rows-1;r++){
-leftNumbers.push(randomNumber(mode,start,end,operator));
+topNumbers=shuffle(topNumbers).slice(0,10);
+
+/* 左端 */
+
+let leftNumbers=[];
+
+if(qCount==100){
+
+for(let i=1;i<=10;i++){
+leftNumbers.push(i);
+}
+
+}else{
+
+leftNumbers.push(Math.floor(Math.random()*(end-start+1))+start);
+
 }
 
 for(let r=0;r<rows;r++){
@@ -336,8 +332,7 @@ document.querySelectorAll(".topHeader").forEach(h=>{
 h.classList.remove("active");
 });
 
-let cell=input.parentElement;
-let col=cell.cellIndex;
+let col=input.parentElement.cellIndex;
 
 let header=document.querySelectorAll("tr")[0].children[col];
 header.classList.add("active");
@@ -410,8 +405,6 @@ keypad.appendChild(btn);
 
 }
 
-/* 列色は自動移動 */
-
 function moveNext(){
 
 let inputs=document.querySelectorAll("input");
@@ -434,8 +427,6 @@ break;
 }
 
 }
-
-/* PCキーボード入力 */
 
 document.addEventListener("keydown",function(e){
 
