@@ -22,8 +22,6 @@ gap:30px;
 margin-top:20px;
 }
 
-<!-- モード選択 -->
-
 .tabletMode{
 flex-direction:column;
 align-items:center;
@@ -98,6 +96,18 @@ grid-row:2 / span 2;
 grid-column:4;
 font-size:30px;
 background:#ffd966;
+}
+
+.correct{
+color:red;
+font-weight:bold;
+margin-left:5px;
+}
+
+.wrong{
+color:red;
+font-weight:bold;
+margin-left:5px;
 }
 
 @media (max-width:900px){
@@ -236,32 +246,22 @@ table.innerHTML="";
 let cols=11;
 let rows=(qCount==100)?11:2;
 
-/* 上段（重複なし） */
-
 let topNumbers=[];
 for(let i=start;i<=end;i++){
 topNumbers.push(i);
 }
 topNumbers=shuffle(topNumbers).slice(0,10);
 
-/* 左端 */
-
 let leftNumbers=[];
 
 if(mode==="int"){
-
-let arr=[1,2,3,4,5,6,7,8,9,10];
-leftNumbers=shuffle(arr);
-
+leftNumbers=shuffle([1,2,3,4,5,6,7,8,9,10]);
 }else{
-
 let arr=[];
 for(let i=1;i<=99;i++){
 arr.push((i/10).toFixed(1));
 }
-
 leftNumbers=shuffle(arr).slice(0,10).map(Number);
-
 }
 
 if(qCount===10){
@@ -378,11 +378,7 @@ keys.forEach(k=>{
 
 let btn=document.createElement("div");
 
-if(k==="OK"){
-btn.className="key okkey";
-}else{
-btn.className="key";
-}
+btn.className=(k==="OK")?"key okkey":"key";
 
 btn.innerText=k;
 
@@ -417,11 +413,15 @@ for(let i=0;i<inputs.length;i++){
 if(inputs[i]===currentInput){
 
 if(i<inputs.length-1){
+
 currentInput=inputs[i+1];
 highlightColumn(currentInput);
+
 }else{
+
 currentInput=null;
 finishGame();
+
 }
 
 break;
@@ -457,7 +457,6 @@ moveNext();
 function finishGame(){
 
 let endTime=performance.now();
-
 let time=((endTime-startTime)/1000).toFixed(2);
 
 let inputs=document.querySelectorAll("input");
@@ -468,9 +467,22 @@ inputs.forEach((input,i)=>{
 
 let user=parseFloat(input.value);
 
+let span=document.createElement("span");
+
 if(Math.abs(user-answers[i])<0.0001){
+
 correct++;
+span.textContent="◯";
+span.className="correct";
+
+}else{
+
+span.textContent="×";
+span.className="wrong";
+
 }
+
+input.parentElement.appendChild(span);
 
 });
 
